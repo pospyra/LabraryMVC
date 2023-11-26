@@ -28,7 +28,11 @@ namespace TYUIU.PurginDS.LibraryManagementNetCoreWebAppMVC.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            BorrowHistory borrowHistory = db.BorrowHistories.Find(id);
+            BorrowHistory borrowHistory = db.BorrowHistories
+                .Include(x=>x.Book)
+                .Include(x=>x.Customer)
+                .FirstOrDefault(x=>x.BorrowHistoryId == id);
+
             if (borrowHistory == null)
             {
                 return HttpNotFound();
