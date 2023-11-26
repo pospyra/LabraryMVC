@@ -1,0 +1,104 @@
+﻿@model TYUIU.PurginDS.LibraryManagementNetCoreWebAppMVC.Models.CustomerBookViewModel
+@using Microsoft.AspNet.Identity
+@{
+    string currentUserId = User.Identity.GetUserId();
+}
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Customer</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Customer.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Customer.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Customer.Address)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Customer.Address)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Customer.Contact)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Customer.Contact)
+        </dd>
+    </dl>
+
+    @if (Model.Books.Any())
+    {
+    <h4>Books Not Returned</h4>
+
+
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Books.FirstOrDefault().Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Books.FirstOrDefault().SerialNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Books.FirstOrDefault().Author)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Books.FirstOrDefault().Publisher)
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model.Books)
+        {
+            <tr>
+                <td>
+                    @Html.ActionLink(item.Title, "Details", new { id = item.BookId })
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SerialNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Author)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Publisher)
+                </td>
+
+                <td>
+                    @if (item.IsAvailable)
+                    {
+                        using (Html.BeginForm("ReturnBook", "BorrowHistories", FormMethod.Post,
+                            new { onsubmit = "return confirm('Вы уверены, что хотите вернуть книгу?')" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.Hidden("bookId", item.BookId)
+                            @Html.Hidden("userId", Model.Customer.CustomerId)
+                            <input type="submit" value="Return" class="btn btn-success" />
+                        }
+                    }
+
+                </td>
+            </tr>
+
+        }
+    </table>
+    }
+
+
+
+
+</div>
+
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Customer.CustomerId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
